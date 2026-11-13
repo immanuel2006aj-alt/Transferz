@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090817">
+<title>SHADOW MONSTER — P2P Transfer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root{--bg:#090817;--panel:rgba(21,20,43,.78);--line:rgba(255,255,255,.11);--text:#f7f5ff;--muted:#aaa6c4;--pink:#ff4fa3;--violet:#9b7bff;--cyan:#48e4e8;--lime:#b9f56b;--danger:#ff6b78;--radius:24px}
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,system-ui,sans-serif;background:radial-gradient(ellipse at 12% 0%,rgba(131,75,255,.22),transparent 38%),radial-gradient(ellipse at 90% 18%,rgba(255,79,163,.14),transparent 32%),radial-gradient(ellipse at 50% 100%,rgba(40,208,215,.1),transparent 40%),var(--bg);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(to bottom,black,transparent 85%)}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.shell{width:min(100% - 32px,900px);margin:auto;padding:34px 0 48px;position:relative}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:34px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:.11em;font-size:13px}
+.brand-mark{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,var(--violet),var(--pink));display:grid;place-items:center;box-shadow:0 8px 28px #9b7bff55}
+.brand-mark svg{width:22px;height:22px}
+.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:9px 13px;color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:#ffffff08}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 12px var(--lime)}
+.hero{text-align:center;margin:0 auto 28px;max-width:680px}
+.eyebrow{color:var(--cyan);font:11px 'DM Mono',monospace;letter-spacing:.2em;text-transform:uppercase}
+h1{font-size:clamp(36px,8vw,66px);line-height:.98;letter-spacing:-.065em;margin:14px 0 13px;font-weight:900}
+h1 span{background:linear-gradient(100deg,var(--cyan),#a78bfa 48%,var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{color:var(--muted);font-size:clamp(13px,2.4vw,15px);line-height:1.7;margin:0 auto;max-width:530px}
+.panel{background:linear-gradient(145deg,rgba(30,27,58,.86),rgba(15,14,32,.82));border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 24px 80px #0006,inset 0 1px #ffffff0b;backdrop-filter:blur(18px);padding:clamp(18px,4vw,30px);animation:rise .55s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.mode-card{border:1px solid var(--line);background:#ffffff06;border-radius:20px;padding:22px 18px;text-align:left;transition:.25s;min-width:0}
+.mode-card:hover{transform:translateY(-4px);border-color:#a78bfa88;background:#ffffff0b;box-shadow:0 14px 36px #8b5cf633}
+.mode-icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;margin-bottom:18px}
+.mode-icon svg{width:25px;height:25px}
+.sender-icon{background:#9b7bff20;color:#b9a5ff}.receiver-icon{background:#48e4e820;color:var(--cyan)}
+.mode-card h2{font-size:18px;margin:0 0 7px}.mode-card p{color:var(--muted);font-size:12px;line-height:1.6;min-height:38px;margin:0 0 18px}
+.action{border:0;border-radius:13px;padding:14px 17px;font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#0b0919;background:linear-gradient(100deg,var(--cyan),#a4f0d0);box-shadow:0 8px 24px #48e4e822;transition:.2s}
+.action:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.action.primary{color:white;background:linear-gradient(100deg,#7858ee,#ba5bdf 55%,#f45da7);box-shadow:0 8px 28px #a05cff35}
+.action.secondary{color:var(--text);background:#ffffff10;border:1px solid var(--line);box-shadow:none}
+.action.danger{color:white;background:linear-gradient(100deg,#e34d71,#fa806e)}
+.action:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.full{width:100%}
+.hidden{display:none!important}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.section-head h2{font-size:19px;margin:0;letter-spacing:-.03em}
+.step{color:var(--cyan);font:11px 'DM Mono',monospace;letter-spacing:.12em}
+.label{display:block;color:#bdb8d7;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin:0 0 9px}
+textarea{width:100%;min-height:112px;resize:vertical;border:1px solid var(--line);border-radius:14px;padding:13px;background:#070713!important;color:#b8f4ed!important;font:11px 'DM Mono',monospace!important;line-height:1.6}
+.field{margin-top:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.row>*{flex:1}
+.hint{color:var(--muted);font-size:11px;line-height:1.6;margin:12px 0 0}
+.status{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;margin:18px 0 0}
+.status .dot{background:var(--pink);box-shadow:0 0 12px var(--pink)}
+.status.good{color:#bff7d2}.status.good .dot{background:var(--lime);box-shadow:0 0 12px var(--lime)}
+.transfer-top{text-align:center;margin-bottom:22px}
+.connection-orb{width:74px;height:74px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;background:radial-gradient(circle,#48e4e833,#9b7bff20);border:1px solid #48e4e855;position:relative}
+.connection-orb:after{content:"";position:absolute;inset:-7px;border:1px solid #48e4e833;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{50%{transform:scale(1.13);opacity:.2}}
+.connection-orb svg{width:31px;height:31px;color:var(--cyan)}
+.transfer-top h2{font-size:20px;margin:0 0 7px}.transfer-top p{font-size:12px;color:var(--muted);margin:0}
+.file-drop{border:1px dashed #a78bfa77;background:#a78bfa0b;border-radius:18px;padding:25px 16px;text-align:center;transition:.2s}
+.file-drop.drag{border-color:var(--cyan);background:#48e4e815}
+.file-drop svg{width:31px;height:31px;color:#b9a5ff;margin-bottom:10px}
+.file-drop strong{display:block;font-size:14px}.file-drop small{display:block;color:var(--muted);font-size:11px;margin-top:6px}
+.file-info{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;background:#ffffff08;border:1px solid var(--line);border-radius:14px;margin-top:12px;text-align:left}
+.file-name{font-size:12px;font-weight:700;overflow-wrap:anywhere}.file-size{color:var(--muted);font:11px 'DM Mono',monospace;white-space:nowrap}
+.progress-wrap{margin-top:20px;text-align:left}
+.progress-meta{display:flex;justify-content:space-between;gap:10px;font:11px 'DM Mono',monospace;color:var(--muted);margin-bottom:9px}
+.track{height:9px;background:#ffffff12;border-radius:99px;overflow:hidden}
+.bar{height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--pink),var(--cyan));border-radius:99px;box-shadow:0 0 18px #9b7bff88;transition:width .15s}
+.notice{padding:13px 14px;border:1px solid #48e4e833;background:#48e4e80a;color:#b7e9e9;border-radius:13px;font-size:11px;line-height:1.6;margin-top:16px}
+.footer{text-align:center;color:#77728f;font-size:10px;line-height:1.7;margin-top:22px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#24213c;border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:12px;box-shadow:0 10px 35px #0008;transition:.25s;z-index:10;max-width:calc(100% - 30px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:560px){.shell{width:min(100% - 22px,900px);padding:18px 0 30px}.topbar{margin-bottom:27px}.brand{font-size:11px}.pill{font-size:9px;padding:8px 10px}.mode-grid{grid-template-columns:1fr}.mode-card{padding:18px}.mode-card p{min-height:0}.hero{margin-bottom:22px}.panel{border-radius:20px}.row{flex-direction:column}.row button{width:100%}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2 3.5 12 12 22l8.5-10L12 2Z"/><path d="m12 7-4 5 4 5 4-5-4-5Z"/></svg></div>SHADOW MONSTER</div>
+    <div class="pill"><span class="dot"></span> P2P ENGINE</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">PRIVATE • DIRECT • DEVICE TO DEVICE</div>
+    <h1>Move files.<br><span>Not through the cloud.</span></h1>
+    <p class="subtitle">Connect two devices and transfer files directly whenever a peer-to-peer network path is available. No account. No file hosting.</p>
+  </section>
+
+  <section id="setup" class="panel">
+    <div class="section-head"><h2>Start a transfer</h2><span class="step">01 / CHOOSE ROLE</span></div>
+    <div class="mode-grid">
+      <article class="mode-card">
+        <div class="mode-icon sender-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V3m0 0L7 8m5-5 5 5"/><path d="M4 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg></div>
+        <h2>Send files</h2><p>Create a secure connection offer and share it with the receiving device.</p>
+        <button class="action primary full" id="createBtn">Create offer <span>↗</span></button>
+      </article>
+      <article class="mode-card">
+        <div class="mode-icon receiver-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v13m0 0 5-5m-5 5-5-5"/><path d="M4 10V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5"/></svg></div>
+        <h2>Receive files</h2><p>Paste the sender's offer, create your answer, and return it to the sender.</p>
+        <button class="action full" id="joinBtn">Join session <span>↙</span></button>
+      </article>
+    </div>
+    <div class="notice">This version uses manual signal exchange: copy the offer to the receiver, then copy the receiver's answer back to the sender. Automatic QR/code pairing requires a signaling service.</div>
+  </section>
+
+  <section id="signaling" class="panel hidden">
+    <div class="section-head"><h2 id="signalTitle">Connection setup</h2><span class="step">02 / PAIR DEVICES</span></div>
+    <div class="field">
+      <label class="label" for="local-sdp">Your connection signal</label>
+      <textarea id="local-sdp" readonly placeholder="Your connection signal will appear here…"></textarea>
+      <div class="row"><button class="action secondary" id="copyBtn">Copy my signal</button><button class="action secondary" id="backBtn">Back</button></div>
+    </div>
+    <div class="field">
+      <label class="label" for="remote-sdp">Other device's signal</label>
+      <textarea id="remote-sdp" placeholder="Paste the other device's complete signal here…"></textarea>
+      <button class="action primary full" id="processBtn" style="margin-top:10px">Process signal & connect</button>
+    </div>
+    <p class="hint" id="signalHint">Keep this page open on both devices until the connection is established. Signal text contains temporary connection information; share it only with the intended device.</p>
+    <div id="signalStatus" class="status"><span class="dot"></span><span>Waiting for signal exchange</span></div>
+  </section>
+
+  <section id="transfer-zone" class="panel hidden">
+    <div class="transfer-top">
+      <div class="connection-orb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 12h8M12 8l4 4-4 4"/><circle cx="12" cy="12" r="10"/></svg></div>
+      <h2 id="connectionTitle">Device connected</h2>
+      <p id="connectionSub">Encrypted peer-to-peer data channel is open.</p>
+    </div>
+
+    <div id="sender-controls" class="hidden">
+      <div class="file-drop" id="dropZone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg>
+        <strong>Drop a file here or choose one</strong><small>Files are sent directly to the connected device.</small>
+        <input type="file" id="file-picker" hidden>
+        <button class="action primary" id="chooseBtn" style="margin-top:15px">Choose file</button>
+      </div>
+      <div id="selectedFile" class="file-info hidden"><div class="file-name" id="selectedName"></div><div class="file-size" id="selectedSize"></div></div>
+      <button id="sendBtn" class="action full" disabled style="margin-top:14px">Send file</button>
+    </div>
+
+    <div id="receiver-controls" class="hidden">
+      <div class="notice">Waiting for an incoming file. The sender must select a file and start the transfer. Your browser will download the received file when transfer completes.</div>
+      <div id="incomingInfo" class="file-info hidden"><div class="file-name" id="incomingName"></div><div class="file-size" id="incomingSize"></div></div>
+    </div>
+
+    <div id="progress-area" class="progress-wrap hidden">
+      <div class="progress-meta"><span id="status-text">Preparing transfer…</span><span id="progress-percent">0%</span></div>
+      <div class="track"><div id="progress-bar" class="bar"></div></div>
+      <div class="progress-meta" style="margin-top:9px"><span id="transferSpeed">Waiting for data</span><span id="transferBytes"></span></div>
+    </div>
+    <div class="row" style="margin-top:20px"><button id="resetBtn" class="action secondary full">End session</button></div>
+  </section>
+  <footer class="footer">SHADOW MONSTER · PEER-TO-PEER TRANSFER<br>Direct transfer is attempted first. Some networks may require a TURN relay; this static demo does not configure one.</footer>
+</main>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+let pc=null, channel=null, role=null, selectedFile=null, incomingMeta=null, receivedChunks=[], receivedBytes=0, startedAt=0, senderBusy=false;
+const $=id=>document.getElementById(id);
+const setup=$('setup'), signaling=$('signaling'), transfer=$('transfer-zone');
+const localText=$('local-sdp'), remoteText=$('remote-sdp');
+const CHUNK_SIZE=16*1024;
+const RTC_CONFIG={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
+
+function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2800)}
+function show(el){el.classList.remove('hidden')} function hide(el){el.classList.add('hidden')}
+function formatBytes(bytes){if(!Number.isFinite(bytes)||bytes<0)return '—';if(bytes<1024)return bytes+' B';const units=['KB','MB','GB','TB'];let n=bytes/1024,i=0;while(n>=1024&&i<units.length-1){n/=1024;i++}return n.toFixed(n>=100?0:1)+' '+units[i]}
+function setSignalStatus(message,good=false){const el=$('signalStatus');el.classList.toggle('good',good);el.innerHTML='<span class="dot"></span><span></span>';el.lastElementChild.textContent=message}
+function setProgress(percent,status,bytesText='',speedText=''){show($('progress-area'));$('progress-bar').style.width=Math.max(0,Math.min(100,percent))+'%';$('progress-percent').textContent=Math.round(percent)+'%';$('status-text').textContent=status;$('transferBytes').textContent=bytesText;$('transferSpeed').textContent=speedText}
+function createPeer(){pc=new RTCPeerConnection(RTC_CONFIG);pc.onconnectionstatechange=()=>{if(pc&&['failed','disconnected','closed'].includes(pc.connectionState)){if(pc.connectionState==='failed')toast('Connection failed. Try another network.')}};pc.oniceconnectionstatechange=()=>{if(pc&&pc.iceConnectionState==='failed')toast('Direct network path failed. A TURN relay may be needed.')}}}
+function waitForIceGathering(peer){return new Promise((resolve,reject)=>{if(peer.iceGatheringState==='complete')return resolve();const timer=setTimeout(()=>reject(new Error('ICE gathering timed out. Check your network and try again.')),25000);function check(){if(peer.iceGatheringState==='complete'){clearTimeout(timer);peer.removeEventListener('icegatheringstatechange',check);resolve()}}peer.addEventListener('icegatheringstatechange',check)})}
+async function createOffer(){
+ role='sender';selectedFile=null;resetTransferUI();setupPeerForSender();setup.classList.add('hidden');show(signaling);$('signalTitle').textContent='Share your offer';$('signalHint').textContent='Copy this offer to the receiving device. The receiver will paste it below, create an answer, and send that answer back to you.';
+ try{const offer=await pc.createOffer();await pc.setLocalDescription(offer);setSignalStatus('Gathering network connection details…');await waitForIceGathering(pc);localText.value=JSON.stringify(pc.localDescription);setSignalStatus('Offer ready — send it to the receiver.',true)}catch(err){toast(err.message);setSignalStatus(err.message)}
+}
+function setupPeerForSender(){createPeer();channel=pc.createDataChannel('shadow-monster-file',{ordered:true});attachChannel(channel)}
+async function joinSession(){role='receiver';resetTransferUI();createPeer();pc.ondatachannel=e=>{channel=e.channel;attachChannel(channel)};setup.classList.add('hidden');show(signaling);$('signalTitle').textContent='Join a session';$('signalHint').textContent='Paste the sender’s offer below and press Process. When your answer appears above, copy it and send it back to the sender.';setSignalStatus('Paste the sender offer to continue')}
+function attachChannel(ch){ch.binaryType='arraybuffer';ch.bufferedAmountLowThreshold=256*1024;ch.onopen=()=>{show(signaling);hide(signaling);show(transfer);$('connectionTitle').textContent='You are connected';$('connectionSub').textContent='Secure peer-to-peer data channel is ready.';if(role==='sender')show($('sender-controls'));else show($('receiver-controls'));toast('Peer-to-peer connection established')};ch.onclose=()=>toast('Data channel closed');ch.onerror=()=>toast('Data channel error');ch.onmessage=handleIncomingMessage}
+async function processSignal(){
+ if(!pc){toast('Start a sender or receiver session first.');return}
+ let data;try{data=JSON.parse(remoteText.value.trim());if(!data||!data.type||!data.sdp)throw new Error()}catch{toast('Paste a valid complete signal JSON.');return}
+ $('processBtn').disabled=true;
+ try{
+  if(role==='receiver'){
+   if(data.type!=='offer')throw new Error('Receiver needs the sender offer.');
+   await pc.setRemoteDescription(data);
+   const answer=await pc.createAnswer();await pc.setLocalDescription(answer);
+   setSignalStatus('Creating your answer…');await waitForIceGathering(pc);
+   localText.value=JSON.stringify(pc.localDescription);setSignalStatus('Answer ready — copy it back to the sender.',true);toast('Answer created. Send it to the sender.')
+  }else{
+   if(data.type!=='answer')throw new Error('Sender needs the receiver answer.');
+   await pc.setRemoteDescription(data);setSignalStatus('Answer accepted. Connecting to receiver…',true);toast('Answer received. Waiting for connection…')
+  }
+ }catch(err){toast(err.message||'Could not process signal');setSignalStatus(err.message||'Signal error')}
+ finally{$('processBtn').disabled=false}
+}
+async function copySignal(){if(!localText.value){toast('No signal generated yet.');return}try{await navigator.clipboard.writeText(localText.value);toast('Signal copied')}catch{localText.select();document.execCommand('copy');toast('Signal copied')}}
+function handleFileSelection(file){if(!file)return;selectedFile=file;$('selectedName').textContent=file.name;$('selectedSize').textContent=formatBytes(file.size);show($('selectedFile'));$('sendBtn').disabled=false}
+async function sendSelectedFile(){
+ if(!selectedFile||!channel||channel.readyState!=='open'||senderBusy)return;
+ senderBusy=true;$('sendBtn').disabled=true;const file=selectedFile;let offset=0;startedAt=performance.now();
+ try{
+  channel.send(JSON.stringify({kind:'file-start',name:file.name,size:file.size,type:file.type||'application/octet-stream',lastModified:file.lastModified}));
+  while(offset<file.size){
+   if(channel.readyState!=='open')throw new Error('Connection closed during transfer.');
+   if(channel.bufferedAmount>1024*1024)await new Promise(resolve=>{channel.addEventListener('bufferedamountlow',resolve,{once:true});setTimeout(resolve,1000)});
+   const chunk=await file.slice(offset,offset+CHUNK_SIZE).arrayBuffer();channel.send(chunk);offset+=chunk.byteLength;
+   const elapsed=(performance.now()-startedAt)/1000;setProgress(file.size?offset/file.size*100:100,'Sending '+file.name,formatBytes(offset)+' / '+formatBytes(file.size),formatBytes(offset/Math.max(elapsed,.1))+'/s');
+  }
+  channel.send(JSON.stringify({kind:'file-end'}));setProgress(100,'File sent successfully',formatBytes(file.size),'Complete');toast('File sent successfully')
+ }catch(err){toast(err.message);setProgress(file.size?offset/file.size*100:'0','Transfer interrupted',formatBytes(offset)+' / '+formatBytes(file.size),'Connection issue')}
+ finally{senderBusy=false;$('sendBtn').disabled=false}
+}
+function handleIncomingMessage(event){
+ if(typeof event.data==='string'){
+  let msg;try{msg=JSON.parse(event.data)}catch{return}
+  if(msg.kind==='file-start'){
+   incomingMeta=msg;receivedChunks=[];receivedBytes=0;startedAt=performance.now();$('incomingName').textContent=msg.name;$('incomingSize').textContent=formatBytes(msg.size);show($('incomingInfo'));setProgress(0,'Receiving '+msg.name,'0 / '+formatBytes(msg.size),'Starting…');toast('Incoming file: '+msg.name)
+  }else if(msg.kind==='file-end'&&incomingMeta){
+   const blob=new Blob(receivedChunks,{type:incomingMeta.type||'application/octet-stream'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=incomingMeta.name||'received-file';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+   setProgress(100,'File received — download started',formatBytes(receivedBytes),'Complete');toast('File received. Check your Downloads / Files app.');incomingMeta=null;receivedChunks=[]
+  }
+ }else if(incomingMeta){
+  receivedChunks.push(event.data);receivedBytes+=event.data.byteLength;
+  const elapsed=(performance.now()-startedAt)/1000;const pct=incomingMeta.size?receivedBytes/incomingMeta.size*100:100;
+  setProgress(pct,'Receiving '+incomingMeta.name,formatBytes(receivedBytes)+' / '+formatBytes(incomingMeta.size),formatBytes(receivedBytes/Math.max(elapsed,.1))+'/s')
+ }
+}
+function resetTransferUI(){hide($('sender-controls'));hide($('receiver-controls'));hide($('progress-area'));hide($('selectedFile'));hide($('incomingInfo'));$('sendBtn').disabled=true;$('progress-bar').style.width='0%';$('status-text').textContent='Preparing transfer…'}
+function endSession(){if(channel){try{channel.close()}catch{}}if(pc){try{pc.close()}catch{}}pc=null;channel=null;role=null;selectedFile=null;incomingMeta=null;receivedChunks=[];senderBusy=false;localText.value='';remoteText.value='';hide(signaling);hide(transfer);show(setup);resetTransferUI();toast('Session ended')}
+$('createBtn').addEventListener('click',createOffer);$('joinBtn').addEventListener('click',joinSession);$('processBtn').addEventListener('click',processSignal);$('copyBtn').addEventListener('click',copySignal);$('backBtn').addEventListener('click',endSession);$('resetBtn').addEventListener('click',endSession);
+$('chooseBtn').addEventListener('click',()=>$('file-picker').click());$('file-picker').addEventListener('change',e=>handleFileSelection(e.target.files[0]));$('sendBtn').addEventListener('click',sendSelectedFile);
+const drop=$('dropZone');drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('drag')});drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');handleFileSelection(e.dataTransfer.files[0])});
+window.addEventListener('beforeunload',()=>{if(pc)pc.close()});
+</script>
+</body>
+</html>
